@@ -1,6 +1,5 @@
 (ns zakupki-gov-parser.parser
   (:require [clojure.xml :as xml]
-            [clojure.zip :as zip]
             [clojure.inspector :as inspector]))
 
 (def xml-file-name "/home/marat/Desktop/notification__Sankt-Peterburg_inc_20110101_000000_20110201_000000_1.xml")
