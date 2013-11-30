@@ -5,3 +5,7 @@ pom.xml
 /targets/
 .lein-deps-sum
 *~
+hs_err_*.log
+*.sqlite
+.#*.clj
+*.jar
