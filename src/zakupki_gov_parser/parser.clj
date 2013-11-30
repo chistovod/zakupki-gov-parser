@@ -1,4 +1,4 @@
-(ns zakupki-gov-parser
+(ns zakupki-gov-parser.parser
   (:require [clojure.xml :as xml]
             [clojure.zip :as zip]
             [clojure.inspector :as inspector]))
@@ -36,7 +36,7 @@
     (list desc)))
 
 (def a1 (->
-         xml-file-name1
+         xml-file-name
          xml/parse
          (extract-from-node lot-tags)
          construct-objects
