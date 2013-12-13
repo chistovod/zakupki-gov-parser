@@ -9,3 +9,4 @@ hs_err_*.log
 *.sqlite
 .#*.clj
 *.jar
+.lein-failures

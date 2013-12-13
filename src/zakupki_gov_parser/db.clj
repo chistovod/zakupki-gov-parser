@@ -1,14 +1,16 @@
 (ns zakupki-gov-parser.db
-  (:require [clojure.java.jdbc :as jdbc] ))
+  (:require [clojure.java.jdbc :as jdbc]
+            [zakupki-gov-parser.entityfuncs :as ef]))
 
 (def db-spec {:classname "org.sqlite.JDBC"
               :subprotocol "sqlite"
               :subname "zakupki.sqlite"})
 
-(comment jdbc/db-do-commands db-spec
-                     (jdbc/create-table-ddl
-                      :lots
-                      [:id "varchar"]))
+(defn create-table-for-entity [entity]
+  (jdbc/db-do-commands db-spec
+                       (apply jdbc/create-table-ddl (ef/get-entity-scheme entity))))
+
+
 
 (comment jdbc/insert! db-spec
               :lots

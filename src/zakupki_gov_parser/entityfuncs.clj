@@ -11,9 +11,9 @@
         fields (:fields entity)
         get-field-params (fn [field]
                            (let [column-name (first field)
-                                 column-type (nth field DEFAULT_TYPE)])
-                           (concat [column-name column-type] (drop 3 field)))])
-  (apply vector table (map get-field-params fields)))
+                                 column-type (nth field 2 DEFAULT_TYPE)]
+                             (concat [column-name column-type] (drop 3 field))))]
+    (apply vector table (map get-field-params fields))))
 
 ;; fix this
 (defn list-entities []
