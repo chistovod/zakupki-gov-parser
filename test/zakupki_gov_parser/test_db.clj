@@ -1,6 +1,6 @@
-(ns zakupki-gov-parser.test-entityfuncs
+(ns zakupki-gov-parser.test-db
   (:use clojure.test)
-  (:use zakupki-gov-parser.entityfuncs))
+  (:use zakupki-gov-parser.db))
 
 (def test-entity {:table :test-entity-name
                   :fields [[:someIdHere :oos:someIdHere :int "PRIMARY KEY AUTO_INCREMENT"]

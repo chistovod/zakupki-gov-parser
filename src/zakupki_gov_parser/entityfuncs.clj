@@ -1,25 +1,24 @@
-(ns zakupki-gov-parser.entityfuncs)
-
-
-(def DEFAULT_TYPE "VARCHAR(32)")
+(ns zakupki-gov-parser.entityfuncs
+  (:use zakupki-gov-parser.entities))
 
 (defn get-xml-tags [entity]
   (set (mapv #(get % 1) (:fields entity))))
 
-(defn get-entity-scheme [entity]
-  (let [table (:table entity)
-        fields (:fields entity)
-        get-field-params (fn [field]
-                           (let [column-name (first field)
-                                 column-type (nth field 2 DEFAULT_TYPE)]
-                             (concat [column-name column-type] (drop 3 field))))]
-    (apply vector table (map get-field-params fields))))
+#_(defn list-entities []
+  (let [entities-ns (find-ns 'zakupki-gov-parser.entities)
+        internal-symbols (-> entities-ns
+                             ns-interns
+                             keys)
+        entity-symbols (filter #(.endsWith (name %) "-entity")
+                               internal-symbols)]
+    (println entity-symbols)
+    (println (type  entity-symbols))
+    (doall (map #(% (.getMappings entities-ns)) entity-symbols))
+    (loop [e entity-symbols]
+      (e (.getMappings entities-ns)))))
 
-;; fix this
-(defn list-entities []
-  (let [internal-symbols (-> *ns*
-                              ns-interns
-                              keys)]
-    (filter #(.endsWith (name %) "-entity") internal-symbols)))
+(defn list-entities
+  []
+  [lot-entity])
 
-(println (list-entities))
+(println  (list-entities))
