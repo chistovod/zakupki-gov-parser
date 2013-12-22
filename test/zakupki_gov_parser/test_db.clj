@@ -8,7 +8,7 @@
                            [:createDate :oos:createDate]
                            [:regNum :oos:regNum]]})
 
-(deftest create-table-for-entity
+(deftest test-entity-scheme-creation
   (is (= [:test-entity-name
           '(:someIdHere :int "PRIMARY KEY AUTO_INCREMENT")
           '(:notificationNumber "VARCHAR(32)")
