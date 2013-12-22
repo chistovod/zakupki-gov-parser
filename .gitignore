@@ -10,3 +10,4 @@ hs_err_*.log
 .#*.clj
 *.jar
 .lein-failures
+*repl-port
