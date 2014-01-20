@@ -9,21 +9,22 @@
   (and (> (count (:content node)) 1)
        (= 1 (count (set (map :tag (:content node)))))))
 
-(defn extract-from-node [node tags]
+(defn filter-tags [node tags]
   (let [tag (:tag node)
-        content (:content node)
-        extract #(extract-from-node % tags)]
+        content (:content node)]
     (if (tags tag)
       {tag (first content)}
       (if (nil? content)
         {}
         (if (node-is-list? node)
-          (let [children-values (mapv #(extract-from-node % tags) content)
+          (let [children-values (mapv #(filter-tags % tags) content)
                 non-empty-children (filterv #(> (count %) 0) children-values)]
+            (println children-values)
             (if (empty? non-empty-children)
               {}
               {:__list__ non-empty-children}))
-          (apply merge (mapv #(extract-from-node % tags) content)))))))
+          (apply merge (mapv #(filter-tags % tags) content)))))))
+
 
 (defn construct-map-of-values [tree-desc]
   (if (contains? tree-desc :__list__)
@@ -39,28 +40,36 @@
 (defn files-under-zip [zipfile]
   (enumeration-seq (.entries zipfile)))
 
+(defn parse [filename input-stream entities on-parsed-func]
+  (let [parsed-xml (xml/parse input-stream)]
+    (doseq [entity-type entities]
+      (let [entities-list (-> parsed-xml
+                              (filter-tags entity-type)
+                              construct-map-of-values)]
+        (on-parsed-func entity-type entities-list)))))
+
 (defn print-entities [entity-type entities-list]
   (println (:table entity-type) "*>" entities-list))
 
-(defn parse-from-stream [input-stream entities process-entities]
-  (let [parsed-xml (xml/parse input-stream)]
-              (doseq [entity-type entities]
-                (let [entities-list (-> parsed-xml
-                                        (extract-from-node entity-type)
-                                        construct-map-of-values)]
-                  (println "123" parsed-xml #_(extract-from-node parsed-xml entity-type))
-                  (process-entities entity-type entities-list)
-                  #_(db/persist-entities! entity entities-list)))))
+;; (defn parse-from-stream [input-stream entities process-entities]
+;;   (let [parsed-xml (xml/parse input-stream)]
+;;               (doseq [entity-type entities]
+;;                 (let [entities-list (-> parsed-xml
+;;                                         (extract-from-node entity-type)
+;;                                         construct-map-of-values)]
+;;                   (println "123" parsed-xml #_(extract-from-node parsed-xml entity-type))
+;;                   (process-entities entity-type entities-list)
+;;                   #_(db/persist-entities! entity entities-list)))))
 
 ;TODO add directory recursive processing
-(defn parse-all-from-directory [^String path entities process-entities]
-  (doseq [file (file-seq (clojure.java.io/file path))]
-    (when (and (.isFile file)
-               (.endsWith (.getName file) ".zip"))
-      (with-open [z (java.util.zip.ZipFile. file)]
-        (doseq [f (files-under-zip z)]
-          (with-open [fi (.getInputStream z f)]
-            (parse-from-stream fi entities process-entities)))))))
+;; (defn parse-all-from-directory [^String path entities process-entities]
+;;   (doseq [file (file-seq (clojure.java.io/file path))]
+;;     (when (and (.isFile file)
+;;                (.endsWith (.getName file) ".zip"))
+;;       (with-open [z (java.util.zip.ZipFile. file)]
+;;         (doseq [f (files-under-zip z)]
+;;           (with-open [fi (.getInputStream z f)]
+;;             (parse-from-stream fi entities process-entities)))))))
 
 #_(parse-all-from-directory path
                           entities
@@ -78,6 +87,6 @@
 ;; (def a1 (->
 ;;          xml-file-name
 ;;          xml/parse
-;;          (extract-from-node lot-tags)
+;;          (filter-tags lot-tags)
 ;;          construct-map-of-values
 ;;          inspector/inspect-table))

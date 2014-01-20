@@ -20,5 +20,3 @@
 (defn list-entities
   []
   [lot-entity])
-
-(println  (list-entities))
