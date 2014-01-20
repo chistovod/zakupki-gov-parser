@@ -10,6 +10,7 @@
        (= 1 (count (set (map :tag (:content node)))))))
 
 (defn filter-tags [node tags]
+  (print "filter-tags!")
   (let [tag (:tag node)
         content (:content node)]
     (if (tags tag)
@@ -33,7 +34,7 @@
     (list tree-desc)))
 
 
-(def path "/home/marat/Desktop/example-data")
+#_(def path "/home/marat/Desktop/example-data")
 
 (def entities (ef/list-entities))
 
@@ -42,11 +43,12 @@
 
 (defn parse [filename input-stream entities on-parsed-func]
   (let [parsed-xml (xml/parse input-stream)]
-    (doseq [entity-type entities]
-      (let [entities-list (-> parsed-xml
-                              (filter-tags entity-type)
+    (doseq [entity entities]
+      (let [entity-tags (ef/get-xml-tags entity)
+            entities-list (-> parsed-xml
+                              (filter-tags entity-tags)
                               construct-map-of-values)]
-        (on-parsed-func entity-type entities-list)))))
+        (on-parsed-func entity-tags entities-list)))))
 
 (defn print-entities [entity-type entities-list]
   (println (:table entity-type) "*>" entities-list))
